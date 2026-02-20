@@ -8,10 +8,19 @@ RUN apt-get update && apt-get install -y \
     libc-client-dev libkrb5-dev
 
 # PHP extensions required by Perfex CRM
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg
-RUN docker-php-ext-configure imap --with-kerberos --with-imap-ssl
-RUN docker-php-ext-install \
-    pdo_mysql mysqli mbstring exif pcntl bcmath gd intl zip imap
+# Batch 1: Standard/Fast extensions
+RUN docker-php-ext-install pdo_mysql mysqli mbstring exif pcntl bcmath zip
+
+# Batch 2: Graphics (GD)
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd
+
+# Batch 3: Internationalization (Intl)
+RUN docker-php-ext-install intl
+
+# Batch 4: Mail (IMAP)
+RUN docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
+    && docker-php-ext-install imap
 
 # Apache modules
 RUN a2enmod rewrite headers expires
