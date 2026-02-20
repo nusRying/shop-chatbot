@@ -1,0 +1,17 @@
+# Git & general files
+.git
+.gitignore
+README.md
+
+# Ignore only temporary or generated folders inside Perfex
+perfex_crm/application/logs/*
+perfex_crm/application/cache/*
+perfex_crm/application/sessions/*
+perfex_crm/uploads/*
+
+# Local dev junk
+node_modules
+tests
+docs
+*.sql
+*.zip

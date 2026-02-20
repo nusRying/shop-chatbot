@@ -1,0 +1,13 @@
+{
+    "name": "perfexcrm/e-invoice",
+    "type": "library",
+    "require": {
+        "mustache/mustache": "^2.14"
+    },
+    "autoload": {
+        "psr-4": {
+            "Perfexcrm\\EInvoice\\": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}
