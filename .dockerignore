@@ -1,17 +1,51 @@
-# Git & general files
-.git
-.gitignore
-README.md
+version: "3.9"
 
-# Ignore only temporary or generated folders inside Perfex
-perfex_crm/application/logs/*
-perfex_crm/application/cache/*
-perfex_crm/application/sessions/*
-perfex_crm/uploads/*
+services:
+  perfex:
+    build: .
+    container_name: perfex_app
+    restart: always
+    depends_on:
+      - db
+    volumes:
+      - perfex_uploads:/var/www/html/application/uploads
+      - perfex_logs:/var/www/html/application/logs
+      - perfex_backups:/var/www/html/application/backups
+      - perfex_temp:/var/www/html/application/temp
+      - perfex_config:/var/www/html/application/config
 
-# Local dev junk
-node_modules
-tests
-docs
-*.sql
-*.zip
+  db:
+    image: mysql:8.0
+    container_name: perfex_db
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: perfex
+      MYSQL_USER: perfex
+      MYSQL_PASSWORD: perfexpass
+    volumes:
+      - perfex_db:/var/lib/mysql
+
+  cron:
+    build: .
+    container_name: perfex_cron
+    restart: always
+    depends_on:
+      - db
+    command: >
+      sh -c "while true; do php /var/www/html/index.php cron; sleep 300; done"
+    volumes:
+      - perfex_uploads:/var/www/html/application/uploads
+      - perfex_logs:/var/www/html/application/logs
+      - perfex_backups:/var/www/html/application/backups
+      - perfex_temp:/var/www/html/application/temp
+      - perfex_config:/var/www/html/application/config
+
+volumes:
+  perfex_uploads:
+  perfex_logs:
+  perfex_backups:
+  perfex_temp:
+  perfex_config:
+  perfex_db:
