@@ -1,15 +1,17 @@
-FROM php:8.1-apache
+FROM php:8.1-apache-bullseye
 
 # System packages
 RUN apt-get update && apt-get install -y \
     libzip-dev zip unzip git curl \
     libpng-dev libjpeg-dev libfreetype6-dev \
-    libonig-dev libxml2-dev libicu-dev
+    libonig-dev libxml2-dev libicu-dev \
+    libc-client-dev libkrb5-dev
 
 # PHP extensions required by Perfex CRM
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
+RUN docker-php-ext-configure imap --with-kerberos --with-imap-ssl
 RUN docker-php-ext-install \
-    pdo_mysql mysqli mbstring exif pcntl bcmath gd intl zip
+    pdo_mysql mysqli mbstring exif pcntl bcmath gd intl zip imap
 
 # Apache modules
 RUN a2enmod rewrite headers expires
